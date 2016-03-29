@@ -45,7 +45,7 @@ $(document).ready(function() {
       ship = 250;
     } else if(gameOver == false && e.keyCode == 39 && ship < 250){
       // right arrow clicked
-      key_presses++
+      key_presses++;
       ship += 25;
     } else if(gameOver == false && e.keyCode == 39 && ship >= 250){
       key_presses++;
@@ -53,10 +53,7 @@ $(document).ready(function() {
     }
     
     $(".piece").css("left", ship + "px");
-  });
-  
-  // drawBoard(2);
-  
+  });  
 
   function getCurrentBoard(offset){
     offset = offset % board.length;
@@ -84,11 +81,7 @@ $(document).ready(function() {
     for(i = 0; i < current_board.length; i++){
       for(j = 0; j < current_board[0].length; j++){
         if(current_board[i][j] == 1){
-    // for(i = 0; i < board.length; i++){
-    //   for(j = 0; j < board[0].length; j++){
-    //     if(board[i][j] == 1){
           var boardpiece = $("<div class='bpiece'></div>");
-          // var boardpiece2 = $("<div class='bpiece'></div>");
           $(gameboard).append(boardpiece);
           $(boardpiece).css("left", (j*50) % 300 + "px");
           $(boardpiece).css("top", (i*50) % 300+ "px");
@@ -113,22 +106,6 @@ $(document).ready(function() {
   }
 
   var game = setInterval(function() {
-    // for(i = 0; i < board.length; i++){
-    //   for(j = 0; j < board[0].length; j++){
-    //     if(board[i][j] == 1){
-    //       var boardpiece = $("<div class='bpiece'></div>");
-    //       // var boardpiece2 = $("<div class='bpiece'></div>");
-    //       boardpieces.push(boardpiece)
-    //       $(gameboard).append(boardpiece);
-    //       $(boardpiece).css("left", j*50 + "px");
-    //       $(boardpiece).css("top", (i+offset)*50 + "px");
-    //     }
-    //   }
-    // }
-    // offset += 1;
-    // 
-    // piecey += 25;
-    // $(".piece").css("top", piecey + "px");
     drawBoard(offset);
     time_spent += 1000;
     collide();
