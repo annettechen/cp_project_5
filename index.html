@@ -24,12 +24,12 @@ var ship = 0;
 var piecey = 0;
 var offset = 0;
 var pay = 0.00;
+var total_reward = 0;
+var key_presses = 0;
+var time_spent = 0;
 
 $(document).ready(function() {
 
-  $("#keyPresses").val(key_presses);
-  $("#timeSpent").val(time_spent);
-  $("#rewardCollected").val(total_reward/1000);
   var gameboard = $("<div id='gameboard'></div>");
   $(document.body).append(gameboard);
   var piece = $("<div class='piece'></div>");
@@ -96,6 +96,9 @@ $(document).ready(function() {
     shipCol = Math.floor(ship / 50);
     for(col = 0; col < cols; col++){
       if(current_board[rows-2][col] == 1 && col == shipCol){
+        $("#keyPresses").val(key_presses);
+        $("#timeSpent").val(time_spent);
+        $("#rewardCollected").val(total_reward/1000);
         window.alert("YOU LOSE! GAME OVER!");
         clearInterval(game);
       }

@@ -12,20 +12,20 @@
 // selector used by jquery to identify your form
 var form_selector = "#mturk_form";
 
-// function for getting URL parameters
-function gup(name) {
-  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
-  var regexS = "[\\?&]"+name+"=([^&#]*)";
-  var regex = new RegExp(regexS);
-  var results = regex.exec(window.location.href);
-  if(results == null)
-    return "";
-  else return unescape(results[1]);
-}
-
 //  Turkify the captioning page.
 $(document).ready(function () {
+
+  function gup(name) {
+    name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+    var regexS = "[\\?&]"+name+"=([^&#]*)";
+    var regex = new RegExp(regexS);
+    var results = regex.exec(window.location.href);
+    if(results == null)
+      return "";
+    else return unescape(results[1]);
+  }
   // is assigntmentId is a URL parameter
+  $(document.body).append('<form id="mturk_form"></form>')
   if((aid = gup("assignmentId"))!="" && $(form_selector).length>0) {
 
     // If the HIT hasn't been accepted yet, disabled the form fields.
