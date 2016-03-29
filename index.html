@@ -25,61 +25,11 @@ var piecey = 0;
 var offset = 0;
 var pay = 0.00;
 
-
-function getCurrentBoard(offset){
-  offset = offset % board.length;
-  var current_board = [];
-  if(offset <= rows){
-    for(last = board.length - offset; last < board.length; last++){
-      current_board.push(board[last]);
-    }
-    for(i = 0; i < rows - offset; i++){
-      current_board.push(board[i]);
-    }
-  } else {
-    for(last = board.length - offset; last < (board.length - offset) + rows; last++){
-      current_board.push(board[last]);
-    }
-  }
-  return current_board;
-}
-
-function drawBoard (offset) {
-  current_board = getCurrentBoard(offset);
-  for(i = 0; i < current_board.length; i++){
-    for(j = 0; j < current_board[0].length; j++){
-      if(current_board[i][j] == 1){
-  // for(i = 0; i < board.length; i++){
-  //   for(j = 0; j < board[0].length; j++){
-  //     if(board[i][j] == 1){
-        var boardpiece = $("<div class='bpiece'></div>");
-        // var boardpiece2 = $("<div class='bpiece'></div>");
-        $(gameboard).append(boardpiece);
-        $(boardpiece).css("left", (j*50) % 300 + "px");
-        $(boardpiece).css("top", (i*50) % 300+ "px");
-      }
-    }
-  }
-}
-
-function collide (){
-  current_board = getCurrentBoard(offset);
-  shipCol = Math.floor(ship / 50);
-  for(col = 0; col < cols; col++){
-    if(current_board[rows-2][col] == 1 && col == shipCol){
-      window.alert("YOU LOSE! GAME OVER!");
-      clearInterval(game);
-
-      // return true;
-    }
-  }
-  // return false;
-}
-
-
 $(document).ready(function() {
-  // var end = Date.getTime();
-  // var timeSpent = start - end;
+
+  $("#keyPresses").val(key_presses);
+  $("#timeSpent").val(time_spent);
+  $("#rewardCollected").val(total_reward/1000);
   var gameboard = $("<div id='gameboard'></div>");
   $(document.body).append(gameboard);
   var piece = $("<div class='piece'></div>");
@@ -101,6 +51,57 @@ $(document).ready(function() {
   $(".piece").css("top", 250 + "px");
   // drawBoard(2);
   
+
+  function getCurrentBoard(offset){
+    offset = offset % board.length;
+    var current_board = [];
+    if(offset <= rows){
+      for(last = board.length - offset; last < board.length; last++){
+        current_board.push(board[last]);
+      }
+      for(i = 0; i < rows - offset; i++){
+        current_board.push(board[i]);
+      }
+    } else {
+      for(last = board.length - offset; last < (board.length - offset) + rows; last++){
+        current_board.push(board[last]);
+      }
+    }
+    return current_board;
+  }
+
+  function drawBoard (offset) {
+    var gameboard = $("<div id='gameboard'></div>");    
+    $(document.body).append(gameboard);
+    $(gameboard).append(piece);
+    current_board = getCurrentBoard(offset);
+    for(i = 0; i < current_board.length; i++){
+      for(j = 0; j < current_board[0].length; j++){
+        if(current_board[i][j] == 1){
+    // for(i = 0; i < board.length; i++){
+    //   for(j = 0; j < board[0].length; j++){
+    //     if(board[i][j] == 1){
+          var boardpiece = $("<div class='bpiece'></div>");
+          // var boardpiece2 = $("<div class='bpiece'></div>");
+          $(gameboard).append(boardpiece);
+          $(boardpiece).css("left", (j*50) % 300 + "px");
+          $(boardpiece).css("top", (i*50) % 300+ "px");
+        }
+      }
+    }
+  }
+
+  function collide (){
+    current_board = getCurrentBoard(offset);
+    shipCol = Math.floor(ship / 50);
+    for(col = 0; col < cols; col++){
+      if(current_board[rows-2][col] == 1 && col == shipCol){
+        window.alert("YOU LOSE! GAME OVER!");
+        clearInterval(game);
+      }
+    }
+  }
+
   var game = setInterval(function() {
     // for(i = 0; i < board.length; i++){
     //   for(j = 0; j < board[0].length; j++){
@@ -118,9 +119,6 @@ $(document).ready(function() {
     // 
     // piecey += 25;
     // $(".piece").css("top", piecey + "px");
-    var gameboard = $("<div id='gameboard'></div>");
-    $(document.body).append(gameboard);
-    $(gameboard).append(piece);
     drawBoard(offset);
     collide();
     pay += .01;
