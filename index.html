@@ -21,9 +21,9 @@ var board =
 var rows = 6;
 var cols = 6;
 var ship = 0;
-var piecey = 0;
+var piecey = 250;
 var offset = 0;
-var pay = 0.00;
+var gameOver = false;
 var total_reward = 0;
 var key_presses = 0;
 var time_spent = 0;
@@ -34,21 +34,27 @@ $(document).ready(function() {
   $(document.body).append(gameboard);
   var piece = $("<div class='piece'></div>");
   $(gameboard).append(piece);
+  $(".piece").css("top", 250 + "px");
   $(document).keydown(function(e) {
-    if(e.keyCode==37 && ship > 0){
+    if(gameOver == false && e.keyCode==37 && ship > 0){
+      key_presses++;
       // left arrow clicked
       ship -= 25;
-    } else if(e.keyCode==37 && ship <= 0){
+    } else if(gameOver == false && e.keyCode==37 && ship <= 0){
+      key_presses++;
       ship = 250;
-    } else if(e.keyCode == 39 && ship < 250){
+    } else if(gameOver == false && e.keyCode == 39 && ship < 250){
       // right arrow clicked
+      key_presses++
       ship += 25;
-    } else if(e.keyCode == 39 && ship >= 250){
+    } else if(gameOver == false && e.keyCode == 39 && ship >= 250){
+      key_presses++;
       ship = 0;
     }
+    
     $(".piece").css("left", ship + "px");
   });
-  $(".piece").css("top", 250 + "px");
+  
   // drawBoard(2);
   
 
@@ -98,9 +104,10 @@ $(document).ready(function() {
       if(current_board[rows-2][col] == 1 && col == shipCol){
         $("#keyPresses").val(key_presses);
         $("#timeSpent").val(time_spent);
-        $("#rewardCollected").val(total_reward/1000);
+        $("#rewardCollected").val(total_reward/10);
         window.alert("YOU LOSE! GAME OVER!");
         clearInterval(game);
+        gameOver = true;
       }
     }
   }
@@ -123,9 +130,10 @@ $(document).ready(function() {
     // piecey += 25;
     // $(".piece").css("top", piecey + "px");
     drawBoard(offset);
+    time_spent += 1000;
     collide();
-    pay += .01;
-    document.getElementById("money").innerHTML = "$" + pay.toFixed(2);
+    total_reward += .01;
+    document.getElementById("money").innerHTML = "$" + total_reward.toFixed(2);
     offset += 1;
 
   }, 1000);
