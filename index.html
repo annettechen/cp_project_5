@@ -21,6 +21,7 @@ var board =
 var rows = 6;
 var cols = 6;
 var ship = 0;
+var collship = 0;
 var piecey = 250;
 var offset = 0;
 var gameOver = false;
@@ -33,7 +34,9 @@ $(document).ready(function() {
   var gameboard = $("<div id='gameboard'></div>");
   $(document.body).append(gameboard);
   var piece = $("<div class='piece'></div>");
+  var collectivepiece = $("<div class='piece'></div>");
   $(gameboard).append(piece);
+  $(gameboard).append(collectivepiece);
   $(".piece").css("top", 250 + "px");
   $(document).keydown(function(e) {
     if(gameOver == false && e.keyCode==37 && ship > 0){
@@ -77,6 +80,7 @@ $(document).ready(function() {
     var gameboard = $("<div id='gameboard'></div>");    
     $(document.body).append(gameboard);
     $(gameboard).append(piece);
+    $(gameboard).append(collectivepiece);
     current_board = getCurrentBoard(offset);
     for(i = 0; i < current_board.length; i++){
       for(j = 0; j < current_board[0].length; j++){
@@ -92,15 +96,19 @@ $(document).ready(function() {
 
   function collide (){
     current_board = getCurrentBoard(offset);
-    shipCol = Math.floor(ship / 50);
+    shipCol = ship / 50;
+    collshipCol = collship / 50;
     for(col = 0; col < cols; col++){
-      if(current_board[rows-2][col] == 1 && col == shipCol){
-        $("#keyPresses").val(key_presses);
-        $("#timeSpent").val(time_spent);
-        $("#rewardCollected").val(total_reward/10);
-        window.alert("YOU LOSE! GAME OVER!");
-        clearInterval(game);
-        gameOver = true;
+      // var midcol = (2 * col + 1) / 2;
+      if(current_board[rows-2][col] == 1 ){
+        if (col == shipCol || midcol == shipCol) || (col == collshipCol || midcod == collshipCol){
+          $("#keyPresses").val(key_presses);
+          $("#timeSpent").val(time_spent);
+          $("#rewardCollected").val(total_reward/10);
+          window.alert("YOU LOSE! GAME OVER!");
+          clearInterval(game);
+          gameOver = true;
+        } 
       }
     }
   }
@@ -114,6 +122,28 @@ $(document).ready(function() {
     offset += 1;
 
   }, 1000);
+
+  var local_ship_position = 5;
+  var is_active = true;
+  function updateBoard() {
+    $.getJSON("//www.codingthecrowd.com/counter.php", {key: “achen”, data: {localship: local_ship_position, active: is_active}})
+        .done(function(json) {
+          var datavalues = json.data[0];
+          var sum = 0;
+          for(i = 0; i < datavalues.length; i++){
+            sum = sum + datavalues[i];
+          }
+          var avg = sum / datavalues.length;
+          collship = collship + (avg * 50);
+          $(".piece").css("left", collship + "px");
+         })      
+        .fail(function(jqxhr, textStatus, error) {
+            var err = textStatus + ", " + error;
+            console.log( "Request Failed: " + err );
+    });
+  }
+  updateBoard();
+  setTimeout(updateBoard, 1000);
 })
 </script>
 <style>
