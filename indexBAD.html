@@ -1,0 +1,183 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Project 5</title>
+<div id="money"></div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="mturk.js"></script>
+<script>
+var board = 
+  [[0,0,0,1,0,0],
+   [0,0,0,0,1,1],
+   [0,0,1,0,0,0],
+   [0,0,0,0,1,0],
+   [0,0,0,0,0,0],
+   [0,0,0,1,0,0],
+   [0,0,0,0,0,0],
+   [0,1,0,1,0,0],
+   [1,0,0,0,0,1],
+   [0,0,0,1,0,0],
+   [1,0,0,0,0,1]];
+var rows = 6;
+var cols = 6;
+var ship = 0;
+var collship = 0;
+var piecey = 250;
+var offset = 0;
+var gameOver = false;
+var total_reward = 0;
+var key_presses = 0;
+var time_spent = 0;
+
+$(document).ready(function() {
+
+  var gameboard = $("<div id='gameboard'></div>");
+  $(document.body).append(gameboard);
+  var piece = $("<div class='piece'></div>");
+  var collectivepiece = $("<div class='piece'></div>");
+  $(gameboard).append(piece);
+  $(gameboard).append(collectivepiece);
+  $(".piece").css("top", 250 + "px");
+  $(document).keydown(function(e) {
+    if(gameOver == false && e.keyCode==37 && ship > 0){
+      key_presses++;
+      // left arrow clicked
+      ship -= 25;
+    } else if(gameOver == false && e.keyCode==37 && ship <= 0){
+      key_presses++;
+      ship = 250;
+    } else if(gameOver == false && e.keyCode == 39 && ship < 250){
+      // right arrow clicked
+      key_presses++;
+      ship += 25;
+    } else if(gameOver == false && e.keyCode == 39 && ship >= 250){
+      key_presses++;
+      ship = 0;
+    }
+    
+    $(".piece").css("left", ship + "px");
+  });  
+
+  function getCurrentBoard(offset){
+    offset = offset % board.length;
+    var current_board = [];
+    if(offset <= rows){
+      for(last = board.length - offset; last < board.length; last++){
+        current_board.push(board[last]);
+      }
+      for(i = 0; i < rows - offset; i++){
+        current_board.push(board[i]);
+      }
+    } else {
+      for(last = board.length - offset; last < (board.length - offset) + rows; last++){
+        current_board.push(board[last]);
+      }
+    }
+    return current_board;
+  }
+
+  function drawBoard (offset) {
+    var gameboard = $("<div id='gameboard'></div>");    
+    $(document.body).append(gameboard);
+    $(gameboard).append(piece);
+    $(gameboard).append(collectivepiece);
+    current_board = getCurrentBoard(offset);
+    for(i = 0; i < current_board.length; i++){
+      for(j = 0; j < current_board[0].length; j++){
+        if(current_board[i][j] == 1){
+          var boardpiece = $("<div class='bpiece'></div>");
+          $(gameboard).append(boardpiece);
+          $(boardpiece).css("left", (j*50) % 300 + "px");
+          $(boardpiece).css("top", (i*50) % 300+ "px");
+        }
+      }
+    }
+  }
+
+  function collide (){
+    current_board = getCurrentBoard(offset);
+    shipCol = ship / 50;
+    collshipCol = collship / 50;
+    for(col = 0; col < cols; col++){
+      // var midcol = (2 * col + 1) / 2;
+      if(current_board[rows-2][col] == 1 ){
+        if (col == shipCol || midcol == shipCol) || (col == collshipCol || midcod == collshipCol){
+          $("#keyPresses").val(key_presses);
+          $("#timeSpent").val(time_spent);
+          $("#rewardCollected").val(total_reward/10);
+          window.alert("YOU LOSE! GAME OVER!");
+          clearInterval(game);
+          gameOver = true;
+        } 
+      }
+    }
+  }
+
+  var game = setInterval(function() {
+    drawBoard(offset);
+    time_spent += 1000;
+    collide();
+    total_reward += .01;
+    document.getElementById("money").innerHTML = "$" + total_reward.toFixed(2);
+    offset += 1;
+
+  }, 1000);
+
+  var local_ship_position = 5;
+  var is_active = true;
+  function updateBoard() {
+    $.getJSON("//www.codingthecrowd.com/counter.php", {key: “achen”, data: {localship: local_ship_position, active: is_active}})
+        .done(function(json) {
+          var datavalues = json.data[0];
+          var sum = 0;
+          for(i = 0; i < datavalues.length; i++){
+            sum = sum + datavalues[i];
+          }
+          var avg = sum / datavalues.length;
+          collship = collship + (avg * 50);
+          $(".piece").css("left", collship + "px");
+         })      
+        .fail(function(jqxhr, textStatus, error) {
+            var err = textStatus + ", " + error;
+            console.log( "Request Failed: " + err );
+    });
+  }
+  updateBoard();
+  setTimeout(updateBoard, 1000);
+})
+</script>
+<style>
+#gameboard {
+  background-color: gray;
+  border-color: black;
+  border-width: 2px;
+  width: 300px;
+  height: 300px;
+  position: absolute;
+}
+.piece {
+  background-color: #AAF;
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+}
+.bpiece {
+  background-color: #AAB;
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+}
+#money {
+  position: relative;
+  border-width: 2px; 
+  padding: 5px;
+}
+</style>
+</head>
+<body>
+</body>
+</html>
